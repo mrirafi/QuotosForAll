@@ -2,6 +2,10 @@ package com.meghpy.quotosforall;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -120,6 +125,35 @@ public class MainActivity extends AppCompatActivity {
 
             quoteText.setText(quoto);
             quoteAuthor.setText(author);
+
+
+            copy.setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("ResourceAsColor")
+                @Override
+                public void onClick(View v) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        clipboard.setText(quoto+ "\n          --- " + author);
+                        copy.setBackgroundColor(R.color.white);
+                        Toast.makeText(MainActivity.this, "Copied", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Can't copy", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            share.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Insert Subject here");
+                    shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, quoto+ "\n --- " + author);
+                    startActivity(Intent.createChooser(shareIntent, "Share via"));
+
+                }
+            });
 
             return myView;
         }
